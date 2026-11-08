@@ -26,7 +26,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kevinfreyap.ui.R
+import com.kevinfreyap.ui.theme.CyberBorder
 import com.kevinfreyap.ui.theme.InventoryTheme
+import com.kevinfreyap.ui.theme.NeonCyan
+import com.kevinfreyap.ui.theme.TextMuted
+import com.kevinfreyap.ui.theme.TextPrimary
+import com.kevinfreyap.ui.theme.Theme
 
 @Composable
 fun AppSearchBar(
@@ -44,7 +49,7 @@ fun AppSearchBar(
             Icon(
                 painter = painterResource(id = R.drawable.search_24),
                 contentDescription = "Search Icon",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = NeonCyan,
             )
         },
         trailingIcon = {
@@ -55,7 +60,7 @@ fun AppSearchBar(
                     Icon(
                         painter = painterResource(R.drawable.close_24),
                         contentDescription = "Clear Icon",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = TextMuted
                     )
                 }
             }
@@ -65,7 +70,7 @@ fun AppSearchBar(
                 text = placeholder,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = TextMuted,
             )
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -75,13 +80,15 @@ fun AppSearchBar(
             }
         ),
         singleLine = true,
-        shape = RoundedCornerShape(50),
+        shape = RoundedCornerShape(10.dp),
         colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedTextColor = TextPrimary,
+            unfocusedTextColor = TextPrimary,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
 
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = NeonCyan,
+            unfocusedIndicatorColor = CyberBorder,
             disabledIndicatorColor = Color.Transparent
         ),
         modifier = modifier

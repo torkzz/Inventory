@@ -31,14 +31,15 @@ import androidx.compose.ui.unit.dp
 import com.kevinfreyap.ui.R
 import com.kevinfreyap.ui.state.LocalIsOffline
 import com.kevinfreyap.ui.theme.InventoryTheme
+import com.kevinfreyap.ui.theme.NeonAmber
 
 @Composable
 fun AppOfflineBanner(
     modifier: Modifier = Modifier,
     isOffline: Boolean = LocalIsOffline.current,
     message: String = stringResource(R.string.label_offline_banner),
-    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
-    contentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
+    backgroundColor: Color = NeonAmber.copy(alpha = 0.2f),
+    contentColor: Color = NeonAmber
 ) {
     AnimatedVisibility(
         visible = isOffline,

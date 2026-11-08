@@ -16,6 +16,9 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.kevinfreyap.inventory.R
+import com.kevinfreyap.ui.theme.CyberSurface
+import com.kevinfreyap.ui.theme.NeonCyan
+import com.kevinfreyap.ui.theme.TextMuted
 import com.kevinfreyap.user.R as userR
 import com.kevinfreyap.product.presentation.navigation.ProductScreen
 import com.kevinfreyap.user.presentation.navigation.UserScreens
@@ -26,6 +29,7 @@ fun BottomBar(
     modifier: Modifier = Modifier
 ) {
     NavigationBar(
+        containerColor = CyberSurface,
         modifier = modifier
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -62,8 +66,11 @@ fun BottomBar(
                     Text(item.title)
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    selectedIconColor = NeonCyan,
+                    selectedTextColor = NeonCyan,
+                    indicatorColor = NeonCyan.copy(alpha = 0.15f),
+                    unselectedIconColor = TextMuted,
+                    unselectedTextColor = TextMuted
                 ),
                 onClick = {
                     navController.navigate(item.route){

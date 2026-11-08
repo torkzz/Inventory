@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kevinfreyap.ui.R
+import com.kevinfreyap.ui.theme.CyberBorder
 import com.kevinfreyap.ui.theme.InventoryTheme
 import com.kevinfreyap.ui.theme.Theme
 
@@ -104,8 +105,8 @@ fun <T> AppDropdownField(
         ExposedDropdownMenu (
             expanded = if (enabled) isMenuVisible else false,
             onDismissRequest = { expanded = false },
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            shape = RoundedCornerShape(16.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(10.dp),
             modifier = Modifier
                 .heightIn(max = 200.dp)
                 .background(Color.Transparent)

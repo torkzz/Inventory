@@ -1,5 +1,6 @@
 package com.kevinfreyap.product.presentation.screen.dashboard.section
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -19,7 +20,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kevinfreyap.product.R
+import com.kevinfreyap.ui.theme.CyberBorder
 import com.kevinfreyap.ui.theme.InventoryTheme
+import com.kevinfreyap.ui.theme.NeonCyan
+import com.kevinfreyap.ui.theme.NeonPurple
 import com.kevinfreyap.ui.theme.Theme
 import com.kevinfreyap.ui.util.shimmerEffect
 
@@ -31,7 +35,8 @@ fun SectionDashboardSummary(
     modifier: Modifier = Modifier,
 ) {
     Card (
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, CyberBorder),
         colors = CardDefaults.outlinedCardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -65,8 +70,8 @@ fun SectionDashboardSummary(
                     Text(
                         text = totalItem,
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Theme.custom.primaryText,
+                        fontWeight = FontWeight.Bold,
+                        color = NeonCyan,
                         modifier = Modifier
                             .horizontalScroll(rememberScrollState())
                     )
@@ -85,8 +90,8 @@ fun SectionDashboardSummary(
                     Text(
                         text = totalProduct,
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Theme.custom.primaryText,
+                        fontWeight = FontWeight.Bold,
+                        color = NeonPurple,
                         modifier = Modifier
                             .horizontalScroll(rememberScrollState())
                     )
@@ -139,7 +144,8 @@ fun SectionDashboardSummaryPlaceholder(
     shimmerColor: Color = Theme.custom.shimmer
 ) {
     Card (
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, CyberBorder),
         colors = CardDefaults.outlinedCardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),

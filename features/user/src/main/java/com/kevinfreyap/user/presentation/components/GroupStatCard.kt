@@ -1,5 +1,6 @@
 package com.kevinfreyap.user.presentation.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kevinfreyap.ui.theme.CyberBorder
 import com.kevinfreyap.ui.theme.InventoryTheme
 import com.kevinfreyap.ui.theme.Theme
 import com.kevinfreyap.ui.util.shimmerEffect
@@ -29,7 +31,8 @@ fun GroupStatCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, CyberBorder),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -67,7 +70,8 @@ fun GroupStatCardPlaceholder(
     shimmerColor: Color = Theme.custom.shimmer
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, CyberBorder),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),

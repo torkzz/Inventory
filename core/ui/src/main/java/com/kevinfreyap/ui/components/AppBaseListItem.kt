@@ -1,6 +1,7 @@
 package com.kevinfreyap.ui.components
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +41,7 @@ import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.kevinfreyap.ui.R
+import com.kevinfreyap.ui.theme.CyberBorder
 import com.kevinfreyap.ui.theme.InventoryTheme
 import com.kevinfreyap.ui.theme.Theme
 import com.kevinfreyap.ui.util.shimmerEffect
@@ -63,7 +65,8 @@ fun AppBaseListItem(
             containerColor = MaterialTheme.colorScheme.surface,
             disabledContainerColor = MaterialTheme.colorScheme.surface,
         ),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, CyberBorder),
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
@@ -150,10 +153,11 @@ fun AppBaseListItemPlaceholder(
     isTrailingDataLabelExist: Boolean = true
 ) {
     Card(
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, CyberBorder),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)

@@ -26,6 +26,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kevinfreyap.ui.theme.CyberBorder
+import com.kevinfreyap.ui.theme.CyberCard
 import com.kevinfreyap.ui.theme.InventoryTheme
 import com.kevinfreyap.ui.theme.Theme
 
@@ -94,12 +96,14 @@ fun AppTextField(
         maxLines = maxLines,
         readOnly = readOnly,
         enabled = enabled,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
         colors = OutlinedTextFieldDefaults.colors(
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
             unfocusedPlaceholderColor = unfocusedColor.copy(0.6f),
             focusedPlaceholderColor = unfocusedColor.copy(0.6f),
 
-            unfocusedBorderColor = unfocusedColor,
+            unfocusedBorderColor = CyberBorder,
             focusedBorderColor = MaterialTheme.colorScheme.primary,
 
             unfocusedLabelColor = unfocusedColor,
@@ -184,9 +188,11 @@ fun AppTextField(
         minLines = minLines,
         maxLines = maxLines,
         readOnly = readOnly,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = unfocusedColor,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedBorderColor = CyberBorder,
             focusedBorderColor = MaterialTheme.colorScheme.primary,
 
             unfocusedLabelColor = unfocusedColor,

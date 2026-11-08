@@ -1,5 +1,6 @@
 package com.kevinfreyap.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,7 +23,9 @@ import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.kevinfreyap.ui.R
+import com.kevinfreyap.ui.theme.CyberBorder
 import com.kevinfreyap.ui.theme.InventoryTheme
+import com.kevinfreyap.ui.theme.NeonCyan
 import com.kevinfreyap.ui.theme.Theme
 import com.kevinfreyap.ui.util.shimmerEffect
 
@@ -32,7 +35,8 @@ fun AppImageCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, NeonCyan.copy(alpha = 0.35f)),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = Theme.custom.hint
@@ -87,7 +91,8 @@ fun AppImageCardPlaceholder(
     shimmerColor: Color = Theme.custom.shimmer
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, CyberBorder),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = Theme.custom.hint

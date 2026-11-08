@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kevinfreyap.ui.theme.InventoryTheme
+import com.kevinfreyap.ui.theme.Theme
 import com.kevinfreyap.ui.util.debouncedClick
 
 @Composable
@@ -25,7 +26,7 @@ fun AppPrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    cornerRadiusPercentage: Int = 50,
+    cornerRadiusPercentage: Int = 20,
     textAlign: TextAlign = TextAlign.Center,
     icon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
@@ -37,12 +38,14 @@ fun AppPrimaryButton(
     Button(
         onClick = debouncedClick,
         enabled = enabled,
-        shape = RoundedCornerShape(cornerRadiusPercentage),
+        shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
-            contentColor = contentColor
+            contentColor = contentColor,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContentColor = Theme.custom.hint
         ),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
         modifier = modifier
     ) {
         if (icon != null) {
@@ -52,7 +55,7 @@ fun AppPrimaryButton(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.Bold,
             textAlign = textAlign,
             modifier = if (textAlign == TextAlign.Center) Modifier else Modifier.weight(1f)
         )

@@ -16,7 +16,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kevinfreyap.ui.theme.CyberBorder
 import com.kevinfreyap.ui.theme.InventoryTheme
+import com.kevinfreyap.ui.theme.NeonCyan
 import com.kevinfreyap.ui.theme.Theme
 
 @Composable
@@ -25,25 +27,28 @@ fun AppOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    cornerRadiusPercentage: Int = 50,
+    cornerRadiusPercentage: Int = 20,
     textAlign: TextAlign = TextAlign.Center,
-    borderColor: Color = Theme.custom.primaryText,
-    contentColor: Color = Theme.custom.primaryText,
+    borderColor: Color = NeonCyan.copy(alpha = 0.5f),
+    contentColor: Color = NeonCyan,
     icon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
 ) {
     OutlinedButton(
         onClick = onClick,
         enabled = enabled,
-        shape = RoundedCornerShape(cornerRadiusPercentage),
+        shape = RoundedCornerShape(10.dp),
         border = BorderStroke(
             width = 1.dp,
             color = borderColor
         ),
         colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = contentColor
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = contentColor,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContentColor = Theme.custom.hint
         ),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
         modifier = modifier
     ) {
         if (icon != null) {
@@ -54,7 +59,7 @@ fun AppOutlinedButton(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.SemiBold,
             textAlign = textAlign,
             modifier = if (textAlign == TextAlign.Center) Modifier else Modifier.weight(1f)
         )

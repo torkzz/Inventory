@@ -20,46 +20,48 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    background = DarkGray300,
+    background = CyberBg,
 
-    primary = Primary300,
-    onPrimary = Primary900,
+    primary = NeonCyan,
+    onPrimary = CyberBg,
 
-    secondary = Primary200,
-    onSecondary = Primary800,
+    secondary = NeonPurple,
+    onSecondary = White,
 
-    surface = DarkGray200,
-    surfaceVariant = DarkGray100,
-    onSurfaceVariant = Gray400,
+    surface = CyberCard,
+    surfaceVariant = CyberSurfaceVariant,
+    onSurface = TextPrimary,
+    onSurfaceVariant = TextMuted,
 
-    secondaryContainer = Primary300.copy(alpha = 0.1f),
-    onSecondaryContainer = Primary300,
+    secondaryContainer = NeonCyan.copy(alpha = 0.15f),
+    onSecondaryContainer = NeonCyan,
 
-    surfaceContainer = DarkGray250,
+    surfaceContainer = CyberSurface,
 
-    error = Red700,
+    error = NeonRed,
     onError = White
 )
 
-private val LightColorScheme = lightColorScheme(
-    background = Gray100,
+private val LightColorScheme = darkColorScheme(
+    background = CyberBg,
 
-    primary = Primary500,
-    onPrimary = White,
+    primary = NeonCyan,
+    onPrimary = CyberBg,
 
-    secondary = Primary900,
+    secondary = NeonPurple,
     onSecondary = White,
 
-    surface = White,
-    surfaceVariant = Gray200,
-    onSurfaceVariant = Gray900,
+    surface = CyberCard,
+    surfaceVariant = CyberSurfaceVariant,
+    onSurface = TextPrimary,
+    onSurfaceVariant = TextMuted,
 
-    secondaryContainer = Primary500.copy(alpha = 0.1f),
-    onSecondaryContainer = Primary500,
+    secondaryContainer = NeonCyan.copy(alpha = 0.15f),
+    onSecondaryContainer = NeonCyan,
 
-    surfaceContainer = Primary100.copy(alpha = 0.7f),
+    surfaceContainer = CyberSurface,
 
-    error = Red500,
+    error = NeonRed,
     onError = White
 )
 
@@ -74,21 +76,21 @@ data class ExtendedColors(
 )
 
 val LightExtendedColors = ExtendedColors(
-    primaryText = DarkGray400,
-    secondaryText = Gray800,
-    success = Green500,
-    warning = Orange500,
-    shimmer = Gray300,
-    hint = Gray700
+    primaryText = TextPrimary,
+    secondaryText = TextSecondary,
+    success = NeonGreen,
+    warning = NeonAmber,
+    shimmer = CyberSurfaceVariant,
+    hint = TextMuted
 )
 
 val DarkExtendedColors = ExtendedColors(
-    primaryText = Gray50,
-    secondaryText = Gray500,
-    success = Green700,
-    warning = Orange700,
-    shimmer = DarkGray100,
-    hint = Gray600
+    primaryText = TextPrimary,
+    secondaryText = TextSecondary,
+    success = NeonGreen,
+    warning = NeonAmber,
+    shimmer = CyberSurfaceVariant,
+    hint = TextMuted
 )
 
 // Fallback
@@ -120,8 +122,11 @@ fun InventoryTheme(
         SideEffect {
             val window = (view.context as Activity).window
             @Suppress("DEPRECATION")
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            window.statusBarColor = CyberBg.toArgb()
+            @Suppress("DEPRECATION")
+            window.navigationBarColor = CyberSurface.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = false
         }
     }
 

@@ -32,6 +32,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kevinfreyap.product.R
+import com.kevinfreyap.ui.theme.CyberBorder
 import com.kevinfreyap.ui.theme.InventoryTheme
 import com.kevinfreyap.ui.theme.Theme
 import com.kevinfreyap.ui.util.shimmerEffect
@@ -47,7 +48,8 @@ fun BatchListItem(
 ) {
     Card(
         onClick = onBatchClick,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, CyberBorder),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -146,7 +148,8 @@ fun BatchListItemPlaceholder(
     shimmerColor: Color = Theme.custom.shimmer
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, CyberBorder),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
