@@ -42,11 +42,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.kevinfreyap.auth.R
 import com.kevinfreyap.auth.presentation.action.AuthAction
-import com.kevinfreyap.auth.presentation.client.GoogleAuthClient
 import com.kevinfreyap.auth.presentation.components.AuthHeaderText
 import com.kevinfreyap.auth.presentation.components.EmailPasswordInput
-import com.kevinfreyap.auth.presentation.components.GoogleButton
-import com.kevinfreyap.auth.presentation.components.HorizontalDividerOr
 import com.kevinfreyap.auth.presentation.navigation.LoginNavigation
 import com.kevinfreyap.auth.presentation.state.ScreenAuthState
 import com.kevinfreyap.ui.components.AppCenterTopBar
@@ -67,26 +64,6 @@ fun LoginScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     val state by viewModel.authState.collectAsStateWithLifecycle()
-
-    val coroutineScope = rememberCoroutineScope()
-    val googleAuthClient = remember { GoogleAuthClient(context) }
-
-    LaunchedEffect(viewModel.uiDialogEvent, lifecycleOwner) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.uiDialogEvent.collect { event ->
-                when(event) {
-                    is UiEvent.Navigate -> {}
-                    is UiEvent.ShowToast -> {
-                        Toast.makeText(
-                            context,
-                            event.messageRes,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
-        }
-    }
 
     LaunchedEffect(viewModel.uiEvent, lifecycleOwner) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -113,14 +90,6 @@ fun LoginScreen(
         state = state,
         onAction = viewModel::onAction,
         onNavigate = onNavigate,
-        onGoogleClicked = {
-            coroutineScope.launch {
-                val idToken = googleAuthClient.getGoogleIdToken()
-                if (idToken != null) {
-                    viewModel.onAction(AuthAction.GoogleBtn(idToken))
-                }
-            }
-        },
         modifier = modifier
     )
 }
@@ -130,7 +99,6 @@ fun LoginContent(
     state: ScreenAuthState,
     onAction: (AuthAction) -> Unit,
     onNavigate: (LoginNavigation) -> Unit,
-    onGoogleClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -222,19 +190,6 @@ fun LoginContent(
                     .fillMaxWidth()
                     .height(56.dp)
             )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            HorizontalDividerOr()
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            GoogleButton(
-                onClick = onGoogleClicked,
-                cornerRadius = 32,
-                modifier = Modifier
-                    .height(56.dp)
-            )
         }
     }
 }
@@ -248,8 +203,7 @@ fun LoginScreenPreview() {
         LoginContent(
             state = ScreenAuthState(),
             onAction = {},
-            onNavigate = {},
-            onGoogleClicked = {}
+            onNavigate = {}
         )
     }
 }

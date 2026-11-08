@@ -104,6 +104,9 @@ fun NavGraphBuilder.mainGraph(
                         is ProductListNavigation.AddProduct -> {
                             navController.navigate(ProductScreen.AddProduct())
                         }
+                        is ProductListNavigation.BarcodeScanner -> {
+                            navController.navigate(ScannerScreens.ScannerScreen)
+                        }
                         is ProductListNavigation.ProductDetail -> {
                             navController.navigate(
                                 ProductScreen.ProductDetail(destination.productId)

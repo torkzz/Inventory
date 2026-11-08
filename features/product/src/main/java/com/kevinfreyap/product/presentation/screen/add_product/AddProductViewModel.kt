@@ -8,6 +8,8 @@ import com.kevinfreyap.domain.Result
 import com.kevinfreyap.domain.error.SessionError
 import com.kevinfreyap.domain.model.InventoryBarcode
 import com.kevinfreyap.product.R
+import com.kevinfreyap.product.data.network.lookup.ProductLookupResult
+import com.kevinfreyap.product.data.network.lookup.ProductLookupService
 import com.kevinfreyap.product.domain.model.error.BatchPriceError
 import com.kevinfreyap.product.domain.model.error.BatchQuantityError
 import com.kevinfreyap.product.domain.model.error.ProductMinimumQuantityError
@@ -45,6 +47,7 @@ class AddProductViewModel @Inject constructor(
     private val validateCategory: ValidateProductCategoryUseCase,
     private val validateLocation: ValidateBatchLocationUseCase,
     private val insertNewProduct: InsertNewProductUseCase,
+    private val productLookupService: ProductLookupService,
 ): ViewModel() {
     private val route = savedStateHandle.toRoute<ProductScreen.AddProduct>()
     private val initialBarcode = if (!route.barcodeValue.isNullOrBlank() && route.barcodeFormat != null) {
@@ -52,7 +55,6 @@ class AddProductViewModel @Inject constructor(
             value = route.barcodeValue,
             format = route.barcodeFormat
         )
-
     } else null
 
     private val _uiEvent = Channel<UiEvent<AddProductNavigation>>()
@@ -67,6 +69,7 @@ class AddProductViewModel @Inject constructor(
 
         if (initialBarcode != null) {
             handleProductIdentification(ProductFormAction.ProductIdentificationAction.OnBarcodeChanged(initialBarcode))
+            searchBarcodeOnline(initialBarcode.value)
         }
     }
 
@@ -81,6 +84,106 @@ class AddProductViewModel @Inject constructor(
             is ProductFormAction.Save -> saveProduct()
             is ProductFormAction.ImagePickerAction -> Unit
             is ProductFormAction.BatchToggleAction -> Unit
+        }
+    }
+
+    fun searchBarcodeOnline(barcode: String) {
+        val clean = barcode.trim()
+        if (clean.isBlank()) return
+
+        viewModelScope.launch {
+            _formState.update {
+                it.copy(
+                    isSearchingBarcode = true,
+                    barcodeSearchStatusMessage = "Searching product information...",
+                    barcodeSearchSuccess = null
+                )
+            }
+
+            when (val result = productLookupService.lookupBarcode(clean)) {
+                is ProductLookupResult.Success -> {
+                    val p = result.product
+                    _formState.update { state ->
+                        state.copy(
+                            isSearchingBarcode = false,
+                            barcodeSearchStatusMessage = "Product Found: ${p.name}",
+                            barcodeSearchSuccess = true,
+                            productDetail = state.productDetail.copy(
+                                productName = p.name,
+                                brand = p.brand,
+                                productCategoryName = p.category ?: state.productDetail.productCategoryName,
+                                productDescription = p.description ?: state.productDetail.productDescription,
+                                productImageUriString = p.imageUrl ?: state.productDetail.productImageUriString,
+                                unit = p.unit
+                            ),
+                            productIdentification = state.productIdentification.copy(
+                                productBarcode = p.barcode,
+                                productBarcodeFormat = state.productIdentification.productBarcodeFormat ?: "EAN_13"
+                            )
+                        )
+                    }
+                }
+                is ProductLookupResult.NotFound -> {
+                    _formState.update { state ->
+                        state.copy(
+                            isSearchingBarcode = false,
+                            barcodeSearchStatusMessage = "Product not found online.\nBarcode: $clean\nYou can manually enter the product information.",
+                            barcodeSearchSuccess = false,
+                            productIdentification = state.productIdentification.copy(
+                                productBarcode = clean
+                            )
+                        )
+                    }
+                }
+                is ProductLookupResult.Offline -> {
+                    _formState.update { state ->
+                        state.copy(
+                            isSearchingBarcode = false,
+                            barcodeSearchStatusMessage = "Offline. Product not found online.\nBarcode: $clean\nYou can manually enter the product information.",
+                            barcodeSearchSuccess = false,
+                            productIdentification = state.productIdentification.copy(
+                                productBarcode = clean
+                            )
+                        )
+                    }
+                }
+                is ProductLookupResult.Timeout -> {
+                    _formState.update { state ->
+                        state.copy(
+                            isSearchingBarcode = false,
+                            barcodeSearchStatusMessage = "Lookup timed out.\nBarcode: $clean\nYou can manually enter the product information.",
+                            barcodeSearchSuccess = false,
+                            productIdentification = state.productIdentification.copy(
+                                productBarcode = clean
+                            )
+                        )
+                    }
+                }
+                is ProductLookupResult.RateLimited -> {
+                    _formState.update { state ->
+                        state.copy(
+                            isSearchingBarcode = false,
+                            barcodeSearchStatusMessage = "API rate limited. Please enter manually.",
+                            barcodeSearchSuccess = false,
+                            productIdentification = state.productIdentification.copy(
+                                productBarcode = clean
+                            )
+                        )
+                    }
+                }
+                is ProductLookupResult.Error -> {
+                    _formState.update { state ->
+                        state.copy(
+                            isSearchingBarcode = false,
+                            barcodeSearchStatusMessage = "Product not found online: ${result.message}\nYou can manually enter the product information.",
+                            barcodeSearchSuccess = false,
+                            productIdentification = state.productIdentification.copy(
+                                productBarcode = clean
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -130,7 +233,6 @@ class AddProductViewModel @Inject constructor(
         crossinline updater: (SharedProductFormState) -> SharedProductFormState
     ) {
         _formState.update { currentState ->
-            // Pack
             val currentSharedState = SharedProductFormState(
                 productDetail = currentState.productDetail,
                 productIdentification = currentState.productIdentification,
@@ -139,7 +241,6 @@ class AddProductViewModel @Inject constructor(
 
             val updatedSharedState = updater(currentSharedState)
 
-            // Unpack
             currentState.copy(
                 productDetail = updatedSharedState.productDetail,
                 productIdentification = updatedSharedState.productIdentification,
@@ -184,6 +285,13 @@ class AddProductViewModel @Inject constructor(
                 action = action,
                 currentState = currentShared,
             )
+        }
+
+        if (action is ProductFormAction.ProductIdentificationAction.OnBarcodeChanged) {
+            val barcodeVal = action.barcode?.value?.trim()
+            if (!barcodeVal.isNullOrBlank() && barcodeVal.length >= 8) {
+                searchBarcodeOnline(barcodeVal)
+            }
         }
     }
 
@@ -259,6 +367,9 @@ class AddProductViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val currentState = _formState.value
+                val purchasePriceDbl = currentState.productDetail.purchasePrice.toDoubleOrNull() ?: 0.0
+                val sellingPriceDbl = currentState.productDetail.sellingPrice.toDoubleOrNull() ?: 0.0
+                val qtyInt = currentState.productDetail.standaloneQuantity.toIntOrNull() ?: 0
 
                 val result = insertNewProduct(
                     productName = currentState.productDetail.productName,
@@ -277,7 +388,12 @@ class AddProductViewModel @Inject constructor(
                     isPriceConfirmed = currentState.batchDetail.isPriceConfirmed,
                     batchLocation = currentState.batchDetail.batchLocation,
                     batchExpiration = currentState.batchInformation.batchExpirationMillis,
-                    batchSupplier = currentState.batchInformation.batchSupplier
+                    batchSupplier = currentState.batchInformation.batchSupplier,
+                    brand = currentState.productDetail.brand,
+                    unit = currentState.productDetail.unit,
+                    purchasePrice = purchasePriceDbl,
+                    sellingPrice = sellingPriceDbl,
+                    quantity = qtyInt
                 )
 
                 when (result) {

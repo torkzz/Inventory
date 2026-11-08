@@ -13,7 +13,7 @@ import com.kevinfreyap.database.model.SyncState
             entity = CategoryEntity::class,
             parentColumns = ["categoryId"],
             childColumns = ["categoryId"],
-            onDelete = ForeignKey.RESTRICT
+            onDelete = ForeignKey.SET_NULL
         ),
         ForeignKey(
             entity = GroupEntity::class,
@@ -32,16 +32,21 @@ import com.kevinfreyap.database.model.SyncState
 data class ProductEntity (
     @PrimaryKey (autoGenerate = false)
     val productId: String,
-    val categoryId: String,
+    val categoryId: String? = null,
     val groupId: String,
     val name: String,
-    val description: String?,
-    val barcode: String?,
-    val barcodeFormat: String?,
-    val sku: String?,
-    val localImagePath: String?,
-    val remoteImageUrl: String?,
-    val minimumQuantity: Int,
+    val brand: String? = null,
+    val description: String? = null,
+    val barcode: String? = null,
+    val barcodeFormat: String? = null,
+    val sku: String? = null,
+    val localImagePath: String? = null,
+    val remoteImageUrl: String? = null,
+    val unit: String = "pcs",
+    val purchasePrice: Double = 0.0,
+    val sellingPrice: Double = 0.0,
+    val quantity: Int = 0,
+    val minimumQuantity: Int = 0,
     val createdAt: Long,
     val lastUpdated: Long,
     val syncState: SyncState = SyncState.SYNCED

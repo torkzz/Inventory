@@ -151,7 +151,8 @@ fun ProductListContent(
                 searchQuery = searchQuery,
                 appliedFilter = appliedFilter,
                 onFilterAction = onFilterAction,
-                onToggleFilterSheet = onToggleFilterSheet
+                onToggleFilterSheet = onToggleFilterSheet,
+                onNavigate = onNavigate
             )
 
             Spacer(Modifier.height(16.dp))
@@ -191,7 +192,8 @@ private fun ProductSearchAndFilterBar(
     searchQuery: String,
     appliedFilter: FilterState,
     onFilterAction: (FilterQueryAction) -> Unit,
-    onToggleFilterSheet: (Boolean) -> Unit
+    onToggleFilterSheet: (Boolean) -> Unit,
+    onNavigate: (ProductListNavigation) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -207,6 +209,19 @@ private fun ProductSearchAndFilterBar(
             modifier = Modifier
                 .weight(1f)
         )
+
+        IconButton(
+            onClick = {
+                onNavigate(ProductListNavigation.BarcodeScanner)
+            },
+            modifier = Modifier
+                .padding(4.dp)
+        ) {
+            Icon(
+                painter = painterResource(coreR.drawable.app_barcode_scanner),
+                contentDescription = "Scan Barcode"
+            )
+        }
 
         IconButton(
             onClick = {

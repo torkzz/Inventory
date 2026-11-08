@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.library)
@@ -21,15 +20,6 @@ android {
         minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        val localProperties = Properties()
-        val localFile = rootProject.file("local.properties")
-        if (localFile.exists()) {
-            localProperties.load(localFile.inputStream())
-        }
-        val webClient = localProperties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: "placeholder-id"
-
-        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$webClient\"")
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -66,10 +56,6 @@ dependencies {
 
     implementation(libs.ktor.client)
     implementation(libs.ktor.client.resources)
-
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.play.services)
-    implementation(libs.googleid)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)

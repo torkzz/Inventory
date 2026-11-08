@@ -3,7 +3,6 @@ package com.kevinfreyap.database.entity.relation
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.kevinfreyap.database.entity.CategoryEntity
-import com.kevinfreyap.database.entity.LocationEntity
 import com.kevinfreyap.database.entity.ProductEntity
 import com.kevinfreyap.database.entity.StockBatchEntity
 
@@ -12,16 +11,15 @@ data class ProductWithDetails(
     val product: ProductEntity,
 
     @Relation(
-        parentColumn = "categoryId", // Foreign Key in ProductEntity
-        entityColumn = "categoryId", // Primary Key in CategoryEntity
+        parentColumn = "categoryId",
+        entityColumn = "categoryId",
     )
-    val category: CategoryEntity,
+    val category: CategoryEntity? = null,
 
-    // Fetch batches
     @Relation(
         entity = StockBatchEntity::class,
         parentColumn = "productId",
         entityColumn = "productId",
     )
-    val batches: List<BatchWithLocation>,
+    val batches: List<BatchWithLocation> = emptyList(),
 )

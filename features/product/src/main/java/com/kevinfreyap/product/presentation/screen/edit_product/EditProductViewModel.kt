@@ -100,7 +100,12 @@ class EditProductViewModel @Inject constructor(
                 val initialDetailState = currentState.productDetail.copy(
                     productImageUriString = resolvedImage,
                     productName = product.name,
-                    productCategoryName = product.category.name,
+                    brand = product.brand,
+                    unit = product.unit,
+                    purchasePrice = if (product.purchasePrice > 0.0) product.purchasePrice.toString() else "",
+                    sellingPrice = if (product.sellingPrice > 0.0) product.sellingPrice.toString() else "",
+                    standaloneQuantity = product.quantity.toString(),
+                    productCategoryName = product.category?.name ?: "",
                     productDescription = product.description,
                     productMinQuantity = product.minimumQuantity.toString()
                 )
@@ -238,6 +243,10 @@ class EditProductViewModel @Inject constructor(
             try {
                 val currentState = _formState.value
 
+                val purchasePriceDbl = currentState.productDetail.purchasePrice.toDoubleOrNull() ?: 0.0
+                val sellingPriceDbl = currentState.productDetail.sellingPrice.toDoubleOrNull() ?: 0.0
+                val qtyInt = currentState.productDetail.standaloneQuantity.toIntOrNull() ?: 0
+
                 val result = updateProduct(
                     groupId = GroupId(groupId),
                     productId = productId,
@@ -250,6 +259,11 @@ class EditProductViewModel @Inject constructor(
                     productBarcode = currentState.productIdentification.productBarcode,
                     productBarcodeFormat = currentState.productIdentification.productBarcodeFormat,
                     productSku = currentState.productIdentification.productSku,
+                    brand = currentState.productDetail.brand,
+                    unit = currentState.productDetail.unit,
+                    purchasePrice = purchasePriceDbl,
+                    sellingPrice = sellingPriceDbl,
+                    quantity = qtyInt
                 )
 
                 when(result) {

@@ -52,11 +52,8 @@ import com.kevinfreyap.auth.R
 import com.kevinfreyap.auth.domain.error.AuthConfirmPasswordError
 import com.kevinfreyap.auth.domain.error.AuthNameError
 import com.kevinfreyap.auth.presentation.action.AuthAction
-import com.kevinfreyap.auth.presentation.client.GoogleAuthClient
 import com.kevinfreyap.auth.presentation.components.AuthHeaderText
 import com.kevinfreyap.auth.presentation.components.EmailPasswordInput
-import com.kevinfreyap.auth.presentation.components.GoogleButton
-import com.kevinfreyap.auth.presentation.components.HorizontalDividerOr
 import com.kevinfreyap.auth.presentation.navigation.RegisterNavigation
 import com.kevinfreyap.auth.presentation.state.ScreenAuthState
 import com.kevinfreyap.ui.components.AppCenterTopBar
@@ -78,9 +75,6 @@ fun RegisterScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     val state by viewModel.authState.collectAsStateWithLifecycle()
-
-    val coroutineScope = rememberCoroutineScope()
-    val googleAuthClient = remember { GoogleAuthClient(context) }
 
     LaunchedEffect(viewModel.uiEvent, lifecycleOwner) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -107,14 +101,6 @@ fun RegisterScreen(
         state = state,
         onAction = viewModel::onAction,
         onNavigate = onNavigate,
-        onGoogleClicked = {
-            coroutineScope.launch {
-                val idToken = googleAuthClient.getGoogleIdToken()
-                if (idToken != null) {
-                    viewModel.onAction(AuthAction.GoogleBtn(idToken))
-                }
-            }
-        },
         modifier = modifier
     )
 }
@@ -124,7 +110,6 @@ fun RegisterContent(
     state: ScreenAuthState,
     onAction: (AuthAction) -> Unit,
     onNavigate: (RegisterNavigation) -> Unit,
-    onGoogleClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -296,19 +281,6 @@ fun RegisterContent(
                     .fillMaxWidth()
                     .height(56.dp)
             )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            HorizontalDividerOr()
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            GoogleButton(
-                onClick = onGoogleClicked,
-                cornerRadius = 32,
-                modifier = Modifier
-                    .height(56.dp)
-            )
         }
     }
 }
@@ -324,7 +296,6 @@ fun RegisterScreenPreview() {
             state = ScreenAuthState(),
             onAction = {},
             onNavigate = {},
-            onGoogleClicked = {},
         )
     }
 }

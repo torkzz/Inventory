@@ -11,6 +11,11 @@ sealed interface ProductFormAction {
         data class OnCreateNewCategory(val newCategory: String): ProductDetailAction
         data class OnDescriptionChanged(val desc: String?): ProductDetailAction
         data class OnMinQuantityChanged(val qty: String): ProductDetailAction
+        data class OnBrandChanged(val brand: String?): ProductDetailAction
+        data class OnUnitChanged(val unit: String): ProductDetailAction
+        data class OnPurchasePriceChanged(val price: String): ProductDetailAction
+        data class OnSellingPriceChanged(val price: String): ProductDetailAction
+        data class OnStandaloneQuantityChanged(val qty: String): ProductDetailAction
     }
 
     // Product Image Actions

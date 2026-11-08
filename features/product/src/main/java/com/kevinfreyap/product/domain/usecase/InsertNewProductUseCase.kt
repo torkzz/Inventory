@@ -56,7 +56,12 @@ class InsertNewProductUseCase @Inject constructor(
         batchPrice: String,
         isPriceConfirmed: Boolean,
         batchExpiration: Long?,
-        batchSupplier: String?
+        batchSupplier: String?,
+        brand: String? = null,
+        unit: String = "pcs",
+        purchasePrice: Double = 0.0,
+        sellingPrice: Double = 0.0,
+        quantity: Int = 0
 
     ): Result<Unit, ProductFormError> {
         val session = activeGroupSession.currentGroupId.first()
@@ -77,7 +82,6 @@ class InsertNewProductUseCase @Inject constructor(
         val quantityResult = if (addInitialStock) {
             validateBatchQuantity(batchQuantity, isQuantityConfirmed)
         } else {
-            // Pass success so doesn't error
             Result.Success(0)
         }
 
@@ -137,19 +141,17 @@ class InsertNewProductUseCase @Inject constructor(
             )
         }
 
-        val validCategoryName = categoryResult.getOrNull()!!
-        val categoryDomain = createOrGetCategory(validCategoryName, groupId)
+        val validCategoryName = categoryResult.getOrNull() ?: ""
+        val categoryDomain = if (validCategoryName.isNotBlank()) {
+            createOrGetCategory(validCategoryName, groupId)
+        } else null
 
         val newProductId = ProductId("product-${UUID.randomUUID()}")
 
-        // use `?:` to satisfy the Kotlin compiler's null-safety.
-        // never be null here because the error-check block above caught all errors, guaranteeing these are Result.Success.
         val validBatchQuantity = quantityResult.getOrNull() ?: 0
         val validPrice = priceResult.getOrNull() ?: 0.0
 
         val initialBatch = if (addInitialStock && validBatchQuantity > 0) {
-            // 1st `!!` : locationResult exists because addInitialStock is true (bypass didn't happen).
-            // 2nd `!!` : The Location data exists because the error-check above guaranteed it's a Success.
             val validLocation = locationResult!!.getOrNull()!!
             val locationDomain = createOrGetLocation(validLocation, groupId)
 
@@ -160,7 +162,7 @@ class InsertNewProductUseCase @Inject constructor(
                     groupId = groupId,
                     location = locationDomain,
                     quantity = validBatchQuantity,
-                    price = validPrice,
+                    price = if (purchasePrice > 0.0) purchasePrice else validPrice,
                     expirationDate = expirationResult.getOrNull(),
                     supplier = supplierResult.getOrNull(),
                     createdAt = System.currentTimeMillis(),
@@ -179,18 +181,29 @@ class InsertNewProductUseCase @Inject constructor(
             currentUri
         }
 
+        val finalQty = if (initialBatch.isNotEmpty()) {
+            validBatchQuantity
+        } else {
+            quantity
+        }
+
         repository.insertProduct(
             Product(
                 productId = newProductId,
                 category = categoryDomain,
                 groupId = groupId,
                 name = nameResult.getOrNull()!!,
+                brand = brand?.trim()?.ifEmpty { null },
                 description = descriptionResult.getOrNull(),
                 barcode = barcodeResult.getOrNull(),
                 barcodeFormat = productBarcodeFormat,
                 sku = skuResult.getOrNull(),
                 localImagePath = permanentPath,
                 remoteImageUrl = null,
+                unit = unit.ifBlank { "pcs" },
+                purchasePrice = if (purchasePrice > 0.0) purchasePrice else validPrice,
+                sellingPrice = sellingPrice,
+                quantity = finalQty,
                 minimumQuantity = minQuantityResult.getOrNull() ?: 0,
                 batches = initialBatch,
                 createdAt = System.currentTimeMillis(),

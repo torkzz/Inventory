@@ -39,7 +39,7 @@ fun RootAppNavigation(
     ) { innerPadding ->
         NavHost(
             navController = rootNavController,
-            startDestination = if (isLoggedIn) AppGraph.Main else AppGraph.Auth,
+            startDestination = AppGraph.Main,
             modifier = Modifier
                 .padding(innerPadding)
         ) {

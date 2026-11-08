@@ -74,6 +74,31 @@ object SharedFormAction {
                     formErrors = currentState.formErrors?.copy(minQuantityError = null)
                 )
             }
+            is ProductFormAction.ProductDetailAction.OnBrandChanged -> {
+                currentState.copy(
+                    productDetail = currentState.productDetail.copy(brand = action.brand)
+                )
+            }
+            is ProductFormAction.ProductDetailAction.OnUnitChanged -> {
+                currentState.copy(
+                    productDetail = currentState.productDetail.copy(unit = action.unit)
+                )
+            }
+            is ProductFormAction.ProductDetailAction.OnPurchasePriceChanged -> {
+                currentState.copy(
+                    productDetail = currentState.productDetail.copy(purchasePrice = action.price)
+                )
+            }
+            is ProductFormAction.ProductDetailAction.OnSellingPriceChanged -> {
+                currentState.copy(
+                    productDetail = currentState.productDetail.copy(sellingPrice = action.price)
+                )
+            }
+            is ProductFormAction.ProductDetailAction.OnStandaloneQuantityChanged -> {
+                currentState.copy(
+                    productDetail = currentState.productDetail.copy(standaloneQuantity = action.qty)
+                )
+            }
         }
     }
 

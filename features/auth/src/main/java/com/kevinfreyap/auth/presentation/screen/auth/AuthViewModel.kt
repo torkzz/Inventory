@@ -3,7 +3,7 @@ package com.kevinfreyap.auth.presentation.screen.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kevinfreyap.auth.R
-import com.kevinfreyap.auth.domain.usecase.AuthenticateWithGoogleUseCase
+
 import com.kevinfreyap.auth.domain.usecase.LoginUseCase
 import com.kevinfreyap.auth.domain.usecase.RegisterUseCase
 import com.kevinfreyap.auth.presentation.action.AuthAction
@@ -27,8 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val register: RegisterUseCase,
-    private val login: LoginUseCase,
-    private val authWithGoogle: AuthenticateWithGoogleUseCase
+    private val login: LoginUseCase
 ): ViewModel() {
     private val _authState = MutableStateFlow(ScreenAuthState())
     val authState = _authState.asStateFlow()
@@ -42,7 +41,6 @@ class AuthViewModel @Inject constructor(
     fun onAction(action: AuthAction) {
         when(action) {
             is AuthAction.CredentialAction -> handleCredentialAction(action)
-            is AuthAction.GoogleBtn -> handleGoogleAuth(action.token)
             is AuthAction.Register -> handleRegister()
             is AuthAction.SignIn -> handleLogin()
             is AuthAction.SendResetEmail -> handleSendResetEmail()
@@ -232,53 +230,5 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun handleGoogleAuth(token: String) {
-        if (_authState.value.uiState is UiState.Loading) return
 
-        viewModelScope.launch {
-            _authState.update {
-                it.copy(
-                    emailError = null,
-                    passwordError = null,
-                    uiState = UiState.Loading
-                )
-            }
-
-            val result = authWithGoogle(
-                token = token
-            )
-
-            when(
-                result
-            ) {
-                is Result.Success -> {
-                    _authState.update {
-                        it.copy(
-                            uiState = UiState.Success(Unit)
-                        )
-                    }
-
-                    _uiEvent.send(UiEvent.ShowToast(R.string.success_login))
-                    _uiEvent.send(UiEvent.Navigate(LoginNavigation.Dashboard))
-                }
-                is Result.Error -> {
-                    _authState.update {
-                        it.copy(
-                            uiState = UiState.Idle
-                        )
-                    }
-
-                    when(
-                        val error = result.error
-                    ) {
-                        NetworkError.Local.NO_INTERNET -> _uiEvent.send(UiEvent.ShowToast(R.string.error_network_no_connection))
-                        NetworkError.Local.UNKNOWN -> _uiEvent.send(UiEvent.ShowToast(R.string.error_network_unknown))
-                        NetworkError.Local.SERVER_DOWN -> _uiEvent.send(UiEvent.ShowToast(R.string.error_network_server_down))
-                        is NetworkError.Server ->  _uiEvent.send(UiEvent.ShowToast(error.message))
-                        else -> {}
-                    }
-                }
-            }
-        }
-    }
 }

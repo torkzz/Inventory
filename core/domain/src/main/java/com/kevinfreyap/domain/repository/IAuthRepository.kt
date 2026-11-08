@@ -4,7 +4,7 @@ import com.kevinfreyap.domain.Result
 import com.kevinfreyap.domain.error.NetworkError
 
 interface IAuthRepository {
-    suspend fun authWithGoogle(token: String): Result<Unit, NetworkError>
+    suspend fun localAccess(): Result<Unit, NetworkError>
     suspend fun register(name: String, email: String, pass: String, confirmPass: String): Result<Unit, NetworkError>
     suspend fun login(email: String, pass: String): Result<Unit, NetworkError>
     suspend fun logout(): Result<Unit, NetworkError>

@@ -60,7 +60,7 @@ class ProductDetailViewModel @Inject constructor(
                     ScreenProductDetailState(
                         imageUri = product.resolveDisplayedImage(),
                         productName = product.name,
-                        productCategory = product.category.name,
+                        productCategory = product.category?.name ?: "General",
                         productSku = product.sku,
                         productTotalQty = product.totalQuantity,
                         productMinPrice = product.minBatchCost?.toFormattedCurrency(),
@@ -119,7 +119,7 @@ class ProductDetailViewModel @Inject constructor(
                 }
             }
             ProductDetailAction.OnCancelDelete -> Unit
-            ProductDetailAction.OnConfirmDelete -> Unit
+            ProductDetailAction.OnConfirmDelete -> deleteProduct()
             ProductDetailAction.OnDeleteButtonClick -> Unit
         }
     }

@@ -15,8 +15,8 @@ class AuthResource {
     class Login(val parent: AuthResource)
 
     @Serializable
-    @Resource("/google")
-    class Google(val parent: AuthResource)
+    @Resource("/local")
+    class Local(val parent: AuthResource)
 
     @Serializable
     @Resource("/refresh")

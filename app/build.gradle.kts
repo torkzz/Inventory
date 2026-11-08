@@ -59,6 +59,7 @@ kotlin {
 dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:domain"))
+    implementation(project(":core:database"))
     implementation(project(":features:product"))
     implementation(project(":features:scanner"))
     implementation(project(":features:auth"))

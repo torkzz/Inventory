@@ -45,19 +45,24 @@ class UpdateProductUseCase @Inject constructor(
         productImageUriString: String?,
         productMinQuantity: String,
         isMinQuantityConfirmed: Boolean,
+        brand: String? = null,
+        unit: String = "pcs",
+        purchasePrice: Double = 0.0,
+        sellingPrice: Double = 0.0,
+        quantity: Int = 0
     ): Result<Unit, ProductFormError> {
         val session = activeGroupSession.currentGroupId.first()
             ?: return Result.Error(
                 ProductFormError(sessionError = SessionError.MISSING_GROUP)
             )
 
-        val groupId = GroupId(session)
+        val activeGroupId = GroupId(session)
 
         val nameResult = validateProductName(productName)
         val categoryResult = validateProductCategory(productCategoryName)
         val descriptionResult = validateProductDescription(productDescription)
-        val barcodeResult = validateProductBarcode(productBarcode, groupId)
-        val skuResult = validateProductSku(productSku, groupId)
+        val barcodeResult = validateProductBarcode(productBarcode, activeGroupId)
+        val skuResult = validateProductSku(productSku, activeGroupId)
         val imageResult = validateProductImage(productImageUriString)
         val minQuantityResult = validateProductMinimumQuantity(productMinQuantity, isMinQuantityConfirmed)
 
@@ -83,10 +88,12 @@ class UpdateProductUseCase @Inject constructor(
             )
         }
 
-        val validCategoryName = categoryResult.getOrNull()!!
-        val categoryDomain = createOrGetCategory(validCategoryName, groupId)
+        val validCategoryName = categoryResult.getOrNull() ?: ""
+        val categoryDomain = if (validCategoryName.isNotBlank()) {
+            createOrGetCategory(validCategoryName, activeGroupId)
+        } else null
 
-        val existingProduct = repository.getProductById(productId, groupId).firstOrNull()
+        val existingProduct = repository.getProductById(productId, activeGroupId).firstOrNull()
             ?: return Result.Error(
                 ProductFormError(
                     databaseError = DatabaseError.NOT_FOUND
@@ -111,21 +118,26 @@ class UpdateProductUseCase @Inject constructor(
         repository.updateProduct(
             Product(
                 productId = productId,
-                groupId = groupId,
+                groupId = activeGroupId,
                 category = categoryDomain,
                 name = nameResult.getOrNull()!!,
+                brand = brand?.trim()?.ifEmpty { null } ?: existingProduct.brand,
                 description = descriptionResult.getOrNull(),
                 barcode = barcodeResult.getOrNull(),
                 barcodeFormat = productBarcodeFormat,
                 sku = skuResult.getOrNull(),
                 localImagePath = finalLocalPath,
                 remoteImageUrl = finalRemoteUrl,
+                unit = unit.ifBlank { existingProduct.unit },
+                purchasePrice = if (purchasePrice > 0.0) purchasePrice else existingProduct.purchasePrice,
+                sellingPrice = if (sellingPrice > 0.0) sellingPrice else existingProduct.sellingPrice,
+                quantity = if (quantity > 0) quantity else existingProduct.quantity,
                 minimumQuantity = minQuantityResult.getOrNull() ?: 0,
                 batches = existingProduct.batches,
                 createdAt = existingProduct.createdAt,
                 lastUpdated = System.currentTimeMillis(),
             ),
-            groupId = groupId
+            groupId = activeGroupId
         )
 
         syncManager.triggerSync()

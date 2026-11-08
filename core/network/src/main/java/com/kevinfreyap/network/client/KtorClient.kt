@@ -120,7 +120,6 @@ fun provideKtorClient(
         defaultRequest {
             url {
                 takeFrom(BuildConfig.BASE_URL)
-                protocol = URLProtocol.HTTPS
             }
         }
     }

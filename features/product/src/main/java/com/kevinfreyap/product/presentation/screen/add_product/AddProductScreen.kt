@@ -8,20 +8,28 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,7 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -39,27 +47,19 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.kevinfreyap.domain.error.ImageError
 import com.kevinfreyap.domain.model.InventoryBarcode
 import com.kevinfreyap.product.R
-import com.kevinfreyap.product.domain.model.error.BatchPriceError
-import com.kevinfreyap.product.domain.model.error.BatchQuantityError
-import com.kevinfreyap.product.domain.model.error.ProductFormError
-import com.kevinfreyap.domain.error.ImageError
-import com.kevinfreyap.product.domain.model.error.ProductMinimumQuantityError
-import com.kevinfreyap.ui.R as coreR
 import com.kevinfreyap.product.presentation.action.ProductFormAction
 import com.kevinfreyap.product.presentation.components.TextSwitchRow
-import com.kevinfreyap.ui.image_picker.rememberImagePicker
 import com.kevinfreyap.product.presentation.navigation.AddProductNavigation
 import com.kevinfreyap.product.presentation.screen.add_product.section.DialogSummaryList
 import com.kevinfreyap.product.presentation.screen.add_product.section.SectionBatchDetail
 import com.kevinfreyap.product.presentation.screen.add_product.section.SectionBatchInformation
 import com.kevinfreyap.product.presentation.screen.add_product.section.SectionProductIdentification
 import com.kevinfreyap.product.presentation.screen.add_product.section.SectionProductInformation
-import com.kevinfreyap.ui.image_picker.ImagePickerBottomSheet
 import com.kevinfreyap.product.presentation.state.ScreenAddProductState
-import com.kevinfreyap.product.presentation.state.BatchFormDetailState
-import com.kevinfreyap.product.presentation.state.ProductFormDetailState
+import com.kevinfreyap.ui.R as coreR
 import com.kevinfreyap.ui.components.AppCenterTopBar
 import com.kevinfreyap.ui.components.AppImageUpload
 import com.kevinfreyap.ui.components.AppOutlinedButton
@@ -67,8 +67,9 @@ import com.kevinfreyap.ui.components.AppPrimaryButton
 import com.kevinfreyap.ui.components.AppTextDialog
 import com.kevinfreyap.ui.components.AppTextIconDialog
 import com.kevinfreyap.ui.event.UiEvent
+import com.kevinfreyap.ui.image_picker.ImagePickerBottomSheet
+import com.kevinfreyap.ui.image_picker.rememberImagePicker
 import com.kevinfreyap.ui.state.UiState
-import com.kevinfreyap.ui.theme.InventoryTheme
 import com.kevinfreyap.ui.theme.Theme
 import kotlinx.coroutines.delay
 import java.io.File
@@ -128,7 +129,6 @@ fun AddProductScreen(
     LaunchedEffect(state.batchDetail.addInitialStock) {
         if (state.batchDetail.addInitialStock) {
             delay(150.milliseconds)
-
             scrollState.animateScrollTo(scrollState.maxValue)
         }
     }
@@ -142,7 +142,7 @@ fun AddProductScreen(
     }
 
     LaunchedEffect(scannedBarcode) {
-        if (scannedBarcode.value.isNotBlank() && scannedBarcode.format.isNotBlank()) {
+        if (scannedBarcode.value.isNotBlank()) {
             viewmodel.onAction(ProductFormAction.ProductIdentificationAction.OnBarcodeChanged(scannedBarcode))
             onClearBarcode()
         }
@@ -172,15 +172,12 @@ fun AddProductScreen(
                 }
                 is ProductFormAction.ImagePickerAction.OnCameraClick -> {
                     showImagePickerBottomSheet = false
-
                     val tempFile = File.createTempFile("product_img_", ".jpg", context.cacheDir)
-
                     val uri = FileProvider.getUriForFile(
                         context,
                         "${context.packageName}.provider",
                         tempFile
                     )
-
                     imagePicker.launchCamera(uri)
                 }
                 is ProductFormAction.ImagePickerAction.OnRemoveImage -> {
@@ -242,13 +239,72 @@ fun AddProductContent(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(24.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
                 modifier = Modifier
                     .weight(1f)
                     .verticalScroll(scrollState)
                     .padding(16.dp)
                     .fillMaxWidth()
             ) {
+                // Barcode Lookup Status Banner
+                if (state.isSearchingBarcode) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.5.dp
+                            )
+                            Spacer(Modifier.width(16.dp))
+                            Text(
+                                text = "Searching product information...",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
+                } else if (!state.barcodeSearchStatusMessage.isNullOrBlank()) {
+                    val isSuccess = state.barcodeSearchSuccess == true
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (isSuccess) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = if (isSuccess) "Product Found Online" else "Product Not Found Online",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isSuccess) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                text = state.barcodeSearchStatusMessage,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (isSuccess) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
+                // Barcode / Identification
+                SectionProductIdentification(
+                    productFormIdentificationState = state.productIdentification,
+                    formErrors = state.formErrors,
+                    onAction = onAction,
+                    onBarcodeIconClicked = {
+                        onNavigate(AddProductNavigation.BarcodeScanner)
+                    }
+                )
+
+                // Image Upload
                 AppImageUpload(
                     uriString = state.productDetail.productImageUriString,
                     icon = painterResource(coreR.drawable.add_a_photo_24),
@@ -269,21 +325,14 @@ fun AddProductContent(
                     } else null
                 )
 
+                // Product Core Info
                 SectionProductInformation(
                     productDetailState = state.productDetail,
                     formErrors = state.formErrors,
                     onAction = onAction,
                 )
 
-                SectionProductIdentification(
-                    productFormIdentificationState = state.productIdentification,
-                    formErrors = state.formErrors,
-                    onAction = onAction,
-                    onBarcodeIconClicked = {
-                        onNavigate(AddProductNavigation.BarcodeScanner)
-                    }
-                )
-
+                // Initial Batch Stock toggle
                 TextSwitchRow(
                     text = stringResource(R.string.label_add_initial_stock),
                     subtitle = stringResource(R.string.label_initial_stock_subtitle),
@@ -298,9 +347,8 @@ fun AddProductContent(
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(24.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         SectionBatchDetail(
                             batchFormDetailState = state.batchDetail,
@@ -317,6 +365,7 @@ fun AddProductContent(
                 }
             }
 
+            // Save Product Button
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -324,7 +373,7 @@ fun AddProductContent(
             ) {
                 AppPrimaryButton(
                     text = stringResource(R.string.btn_label_save_product),
-                    enabled = state.isSavedEnabled,
+                    enabled = state.isSavedEnabled && state.uiState !is UiState.Loading,
                     onClick = {
                         onAction(ProductFormAction.Save)
                     },
@@ -336,6 +385,7 @@ fun AddProductContent(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(56.dp)
                 )
             }
         }
@@ -449,7 +499,7 @@ fun AddProductContent(
         AppTextIconDialog(
             icon = painterResource(coreR.drawable.app_error_load_icon),
             title = stringResource(R.string.dialog_title_save_failed),
-            subtitle = stringResource(R.string.dialog_subtitle_save_failed),
+            subtitle = (state.uiState as UiState.Error).message,
             iconColor = MaterialTheme.colorScheme.error,
             iconSize = 160.dp,
             onDismissRequest = {
@@ -464,75 +514,6 @@ fun AddProductContent(
                     modifier = Modifier.fillMaxWidth(0.5f)
                 )
             },
-        )
-    }
-}
-
-@Preview (
-    showBackground = true,
-    device = "spec:width=1080px,height=1900px,dpi=416"
-)
-@Composable
-fun AddProductContentPreview() {
-    InventoryTheme {
-        var isChecked by remember { mutableStateOf(true) }
-
-        AddProductContent(
-            state = ScreenAddProductState(),
-            scrollState = rememberScrollState(),
-            showImagePickerBottomSheet = false,
-            showRemoveImageDialog = false,
-            showDiscardDialog = false,
-            handleBackNavigation = {},
-            onDismissDiscardDialog = {},
-            onAction = {action ->
-                if (action is ProductFormAction.BatchDetailAction.OnAddInitialStockToggled) {
-                    isChecked = !isChecked
-                }
-            },
-            onNavigate = {}
-        )
-    }
-}
-
-@Preview (
-    showBackground = true,
-    device = "spec:width=1080px,height=3600px,dpi=416"
-)
-@Composable
-fun AddProductContentPreview_Filled() {
-    InventoryTheme {
-        var isChecked by remember { mutableStateOf(true) }
-
-        AddProductContent(
-            state = ScreenAddProductState(
-                showSummaryConfirmationDialog = false,
-                batchDetail = BatchFormDetailState(
-                    addInitialStock = isChecked,
-                    batchQuantity = "11000",
-                    batchPrice = "1000000000"
-                ),
-                productDetail = ProductFormDetailState(
-                    productMinQuantity = "10000"
-                ),
-                formErrors = ProductFormError(
-                    minQuantityError = ProductMinimumQuantityError.REQUIRES_CONFIRMATION,
-                    quantityError = BatchQuantityError.REQUIRES_CONFIRMATION,
-                    priceError = BatchPriceError.REQUIRES_CONFIRMATION
-                )
-            ),
-            scrollState = rememberScrollState(),
-            showImagePickerBottomSheet = false,
-            showRemoveImageDialog = false,
-            showDiscardDialog = false,
-            handleBackNavigation = {},
-            onDismissDiscardDialog = {},
-            onAction = {action ->
-                if (action is ProductFormAction.BatchDetailAction.OnAddInitialStockToggled) {
-                    isChecked = !isChecked
-                }
-            },
-            onNavigate = {}
         )
     }
 }

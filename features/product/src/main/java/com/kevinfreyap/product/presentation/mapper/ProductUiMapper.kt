@@ -11,7 +11,7 @@ fun Product.toUiModel(): ProductListItemUi {
         name = this.name,
         quantity = this.totalQuantity,
         stockLevel = calculateStockLevel(qty = this.totalQuantity, minQty = this.minimumQuantity),
-        category = this.category.name,
+        category = this.category?.name ?: "General",
         imageUri = this.resolveDisplayedImage(),
         sku = this.sku
     )

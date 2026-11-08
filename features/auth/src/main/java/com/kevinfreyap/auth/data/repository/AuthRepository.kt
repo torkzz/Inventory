@@ -1,7 +1,7 @@
 package com.kevinfreyap.auth.data.repository
 
 import com.kevinfreyap.auth.data.mapper.toEntity
-import com.kevinfreyap.auth.data.network.dto.request.GoogleAuthRequest
+
 import com.kevinfreyap.auth.data.network.dto.request.LoginRequest
 import com.kevinfreyap.auth.data.network.dto.request.LogoutRequest
 import com.kevinfreyap.auth.data.network.dto.request.RegisterRequest
@@ -29,14 +29,9 @@ class AuthRepository @Inject constructor(
     private val activeGroupSession: IActiveGroupSession,
     private val devicePreferences: IDevicePreferences
 ): IAuthRepository {
-    override suspend fun authWithGoogle(token: String): Result<Unit, NetworkError> {
+    override suspend fun localAccess(): Result<Unit, NetworkError> {
         return try {
-            val response = api.authWithGoogle(
-                GoogleAuthRequest(
-                    idToken = token
-                )
-            )
-
+            val response = api.localAccess()
             handleAuthSuccess(response)
             Result.Success(Unit)
         } catch (e: ResponseException) {

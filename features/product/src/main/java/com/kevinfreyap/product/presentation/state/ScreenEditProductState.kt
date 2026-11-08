@@ -24,7 +24,6 @@ data class ScreenEditProductState(
 
     val isEditEnabled: Boolean
         get() = productDetail.productName.isNotBlank() &&
-                productDetail.productCategoryName.isNotBlank() &&
                 formErrors?.hasAnyError != true &&
                 hasUnsavedChanges
 }

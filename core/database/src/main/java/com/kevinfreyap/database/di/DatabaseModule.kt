@@ -27,7 +27,9 @@ class DatabaseModule {
             context,
             AppDatabase::class.java,
             "inventory.db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
     }
 
     @Provides
