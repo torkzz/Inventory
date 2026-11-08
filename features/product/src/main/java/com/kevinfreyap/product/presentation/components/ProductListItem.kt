@@ -29,62 +29,42 @@ fun ProductListItem(
     AppBaseListItem(
         itemName = product.name,
         imageUri = product.imageUri,
-        subtitle = {
+        titleContent = {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                if (!product.sku.isNullOrBlank()) {
-                    Text(
-                        text = product.sku,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Theme.custom.secondaryText,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .weight(1f, fill = false)
-                    )
-
-                    Text(
-                        text = "·",
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        color = Theme.custom.secondaryText,
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp)
-                    )
-                }
                 Text(
-                    text = product.category,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Theme.custom.secondaryText,
+                    text = product.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Theme.custom.primaryText,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(1f)
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+
+                Text(
+                    text = "${product.quantity} ${product.unit.ifBlank { "pcs" }}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = product.stockLevel.color,
+                    modifier = Modifier.padding(start = 8.dp)
                 )
             }
         },
-        trailingData = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .padding(4.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.label_quantity),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Theme.custom.secondaryText,
-                )
-                Text(
-                    text = product.quantity.toString(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
-                    color = product.stockLevel.color
-                )
-            }
+        subtitle = {
+            Text(
+                text = product.category,
+                style = MaterialTheme.typography.bodySmall,
+                color = Theme.custom.secondaryText,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.fillMaxWidth()
+            )
         },
+        trailingData = null,
         onClick = onClick,
         modifier = modifier
     )

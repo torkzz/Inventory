@@ -26,7 +26,7 @@ import com.kevinfreyap.ui.util.shimmerEffect
 @Composable
 fun SectionProductCore(
     name: String,
-    sku: String?,
+    sku: String? = null,
     category: String,
     modifier: Modifier = Modifier
 ) {
@@ -44,32 +44,11 @@ fun SectionProductCore(
             textAlign = TextAlign.Center
         )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (!sku.isNullOrBlank()) {
-                Text(
-                    text = sku,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = Theme.custom.secondaryText
-                )
-
-                Text(
-                    text = "·",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Theme.custom.secondaryText,
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                )
-            }
-
-            Text(
-                text = category,
-                style = MaterialTheme.typography.labelLarge,
-                color = Theme.custom.secondaryText
-            )
-        }
+        Text(
+            text = category,
+            style = MaterialTheme.typography.labelLarge,
+            color = Theme.custom.secondaryText
+        )
     }
 }
 

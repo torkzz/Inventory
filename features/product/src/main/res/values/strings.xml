@@ -147,7 +147,8 @@
     <string name="subtitle_banner_something_wrong">We couldn\'t load any details for this product</string>
 
     <!--  CURRENCY  -->
-    <string name="currency_idr_rp">Rp</string>
+    <string name="currency_php">₱</string>
+    <string name="currency_idr_rp">₱</string>
 
     <!--  DIALOG  -->
     <string name="dialog_title_remove_image">Remove Image?</string>
@@ -180,7 +181,7 @@
     <string name="warning_no_description">No Description Added</string>
     <string name="warning_no_active_batch">No active batch</string>
     <string name="warning_no_price">No Cost Set</string>
-    <string name="warning_no_price_short">Rp ---</string>
+    <string name="warning_no_price_short">₱ ---</string>
     <string name="warning_no_expiration">No Expiration</string>
     <string name="warning_no_barcode">No Barcode</string>
     <string name="warning_invalid_barcode">Invalid Barcode</string>

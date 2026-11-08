@@ -241,17 +241,13 @@ fun EditProductContent(
 
                 SectionProductInformation(
                     productDetailState = state.productDetail,
+                    barcode = state.productIdentification.productBarcode,
                     formErrors = state.formErrors,
-                    onAction = onAction,
-                )
-
-                SectionProductIdentification(
-                    productFormIdentificationState = state.productIdentification,
-                    formErrors = state.formErrors,
-                    onAction = onAction,
+                    isEditMode = true,
                     onBarcodeIconClicked = {
                         onNavigate(EditProductNavigation.BarcodeScanner)
-                    }
+                    },
+                    onAction = onAction,
                 )
             }
 

@@ -294,16 +294,6 @@ fun AddProductContent(
                     }
                 }
 
-                // Barcode / Identification
-                SectionProductIdentification(
-                    productFormIdentificationState = state.productIdentification,
-                    formErrors = state.formErrors,
-                    onAction = onAction,
-                    onBarcodeIconClicked = {
-                        onNavigate(AddProductNavigation.BarcodeScanner)
-                    }
-                )
-
                 // Image Upload
                 AppImageUpload(
                     uriString = state.productDetail.productImageUriString,
@@ -325,10 +315,15 @@ fun AddProductContent(
                     } else null
                 )
 
-                // Product Core Info
+                // Product Information (Name, Initial Stock, Brand, Unit, Prices, Category, Description, Barcode)
                 SectionProductInformation(
                     productDetailState = state.productDetail,
+                    barcode = state.productIdentification.productBarcode,
                     formErrors = state.formErrors,
+                    isEditMode = false,
+                    onBarcodeIconClicked = {
+                        onNavigate(AddProductNavigation.BarcodeScanner)
+                    },
                     onAction = onAction,
                 )
 

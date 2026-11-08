@@ -1,22 +1,14 @@
 package com.kevinfreyap.product.presentation.util
 
-import java.text.NumberFormat
+import com.kevinfreyap.ui.util.toFormattedCurrency as centralizedToFormattedCurrency
+import com.kevinfreyap.ui.util.toFormattedNumber as centralizedToFormattedNumber
+import com.kevinfreyap.ui.util.phpLocale
 import java.util.Locale
 
-val locale: Locale = Locale.Builder()
-    .setLanguage("id")
-    .setRegion("ID")
-    .build()
+val locale: Locale = phpLocale
 
-fun Int.toFormattedNumber(): String {
-    val formatter = NumberFormat.getNumberInstance(locale)
+fun Int.toFormattedNumber(): String = this.centralizedToFormattedNumber()
 
-    return formatter.format(this)
-}
+fun Double.toFormattedCurrency(): String = (this as Double?).centralizedToFormattedCurrency()
 
-fun Double.toFormattedCurrency(): String {
-    val formatter = NumberFormat.getCurrencyInstance(locale)
-
-    formatter.maximumFractionDigits = 0
-    return formatter.format(this)
-}
+fun Float.toFormattedCurrency(): String = (this.toDouble() as Double?).centralizedToFormattedCurrency()

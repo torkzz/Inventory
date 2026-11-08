@@ -188,7 +188,7 @@ fun SectionBatchesPreview() {
                     id = "batch-3f8d9b21-4c6e-4a12-9e83-7b5c1a9f0e2d",
                     shortId = "3F8D9B",
                     quantity = 2,
-                    price = "Rp 1.000.000",
+                    price = "₱1,000.00",
                     location = "Garage",
                     expDate = "31 September 2020",
                     supplier = null
@@ -206,7 +206,7 @@ fun SectionBatchesPreview() {
                     id = "batch-7b5c1a9f-9e83-7b5c1a9f0e2d-3f8d9b21",
                     shortId = "7B5C1A",
                     quantity = 2,
-                    price = "Rp 1.000.000",
+                    price = "₱1,000.00",
                     location = "Garage",
                     expDate = "31 September 2020",
                     supplier = null
@@ -215,7 +215,7 @@ fun SectionBatchesPreview() {
                     id = "batch-1a9f0e2d-9e83-7b5c1a9f0e2d-3f8d9b21",
                     shortId = "1A9F0E",
                     quantity = 2,
-                    price = "Rp 1.000.000",
+                    price = "₱1,000.00",
                     location = "Garage",
                     expDate = "31 September 2020",
                     supplier = null

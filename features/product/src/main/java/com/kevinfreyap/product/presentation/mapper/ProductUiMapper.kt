@@ -10,6 +10,7 @@ fun Product.toUiModel(): ProductListItemUi {
         id = this.productId.value,
         name = this.name,
         quantity = this.totalQuantity,
+        unit = this.unit.ifBlank { "pcs" },
         stockLevel = calculateStockLevel(qty = this.totalQuantity, minQty = this.minimumQuantity),
         category = this.category?.name ?: "General",
         imageUri = this.resolveDisplayedImage(),

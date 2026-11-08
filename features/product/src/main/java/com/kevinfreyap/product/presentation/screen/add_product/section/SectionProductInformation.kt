@@ -4,17 +4,23 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.kevinfreyap.domain.model.InventoryBarcode
 import com.kevinfreyap.product.R
+import com.kevinfreyap.product.domain.model.error.ProductBarcodeError
 import com.kevinfreyap.product.domain.model.error.ProductCategoryError
 import com.kevinfreyap.product.domain.model.error.ProductDescriptionError
 import com.kevinfreyap.product.domain.model.error.ProductFormError
@@ -22,16 +28,21 @@ import com.kevinfreyap.product.domain.model.error.ProductNameError
 import com.kevinfreyap.product.presentation.action.ProductFormAction
 import com.kevinfreyap.product.presentation.components.FieldListHeader
 import com.kevinfreyap.product.presentation.state.ProductFormDetailState
+import com.kevinfreyap.ui.R as coreR
 import com.kevinfreyap.ui.components.AppDropdownField
 import com.kevinfreyap.ui.components.AppTextField
+import com.kevinfreyap.ui.theme.NeonCyan
 import com.kevinfreyap.ui.theme.Theme
 
 @Composable
 fun SectionProductInformation(
     productDetailState: ProductFormDetailState,
     formErrors: ProductFormError?,
-    onAction: (ProductFormAction.ProductDetailAction) -> Unit,
-    modifier: Modifier = Modifier
+    onAction: (ProductFormAction) -> Unit,
+    modifier: Modifier = Modifier,
+    isEditMode: Boolean = false,
+    barcode: String? = null,
+    onBarcodeIconClicked: () -> Unit = {}
 ) {
     FieldListHeader(
         title = stringResource(R.string.label_product_detail),
@@ -39,15 +50,16 @@ fun SectionProductInformation(
         fieldsColumn = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
+                // 1. PRODUCT NAME
                 AppTextField(
                     value = productDetailState.productName,
                     onValueChange = { name ->
                         onAction(ProductFormAction.ProductDetailAction.OnNameChanged(name))
                     },
                     label = stringResource(R.string.label_field_product_name),
+                    placeholder = "Sterling Notebook",
                     minLines = 1,
                     maxLines = 1,
                     unfocusedColor = Theme.custom.hint,
@@ -55,7 +67,7 @@ fun SectionProductInformation(
                     capitalization = KeyboardCapitalization.Sentences,
                     isError = formErrors?.nameError != null,
                     errorMessage = if (formErrors?.nameError != null) {
-                        when(formErrors.nameError) {
+                        when (formErrors.nameError) {
                             ProductNameError.EMPTY -> stringResource(R.string.error_product_name_empty)
                             ProductNameError.TOO_LONG -> stringResource(R.string.error_product_name_too_long)
                             ProductNameError.CONTAINS_NEWLINE -> stringResource(R.string.error_product_name_contains_newline)
@@ -63,6 +75,38 @@ fun SectionProductInformation(
                     } else null
                 )
 
+                // 2. INITIAL STOCK (Add) vs CURRENT STOCK (Edit read-only)
+                if (isEditMode) {
+                    val currentStockDisplay = "${productDetailState.standaloneQuantity} ${productDetailState.unit.ifBlank { "pcs" }}"
+                    AppTextField(
+                        value = currentStockDisplay,
+                        onValueChange = {},
+                        readOnly = true,
+                        enabled = false,
+                        label = "Current Stock",
+                        minLines = 1,
+                        maxLines = 1,
+                        unfocusedColor = Theme.custom.hint,
+                        disabledTextColor = NeonCyan
+                    )
+                } else {
+                    AppTextField(
+                        value = productDetailState.standaloneQuantity,
+                        onValueChange = { qty ->
+                            val onlyDigit = qty.filter { it.isDigit() }
+                            onAction(ProductFormAction.ProductDetailAction.OnStandaloneQuantityChanged(onlyDigit))
+                        },
+                        label = "Initial Stock",
+                        placeholder = "0",
+                        minLines = 1,
+                        maxLines = 1,
+                        unfocusedColor = Theme.custom.hint,
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
+                }
+
+                // 3. BRAND & UNIT
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.Top,
@@ -74,6 +118,7 @@ fun SectionProductInformation(
                             onAction(ProductFormAction.ProductDetailAction.OnBrandChanged(brand))
                         },
                         label = "Brand (Optional)",
+                        placeholder = "Optional",
                         minLines = 1,
                         maxLines = 1,
                         unfocusedColor = Theme.custom.hint,
@@ -86,7 +131,8 @@ fun SectionProductInformation(
                         onValueChange = { unit ->
                             onAction(ProductFormAction.ProductDetailAction.OnUnitChanged(unit))
                         },
-                        label = "Unit (e.g. pcs, L, kg)",
+                        label = "Unit",
+                        placeholder = "pcs",
                         minLines = 1,
                         maxLines = 1,
                         unfocusedColor = Theme.custom.hint,
@@ -95,6 +141,7 @@ fun SectionProductInformation(
                     )
                 }
 
+                // 4. SELLING PRICE & PURCHASE PRICE (PHP)
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.Top,
@@ -105,7 +152,8 @@ fun SectionProductInformation(
                         onValueChange = { price ->
                             onAction(ProductFormAction.ProductDetailAction.OnSellingPriceChanged(price))
                         },
-                        label = "Selling Price (Optional)",
+                        label = "Selling Price (₱)",
+                        placeholder = "₱0.00",
                         minLines = 1,
                         maxLines = 1,
                         unfocusedColor = Theme.custom.hint,
@@ -119,7 +167,8 @@ fun SectionProductInformation(
                         onValueChange = { price ->
                             onAction(ProductFormAction.ProductDetailAction.OnPurchasePriceChanged(price))
                         },
-                        label = "Purchase Price (Optional)",
+                        label = "Purchase Price (₱)",
+                        placeholder = "₱0.00",
                         minLines = 1,
                         maxLines = 1,
                         unfocusedColor = Theme.custom.hint,
@@ -129,65 +178,48 @@ fun SectionProductInformation(
                     )
                 }
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.Top,
+                // 5. CATEGORY
+                AppDropdownField(
+                    value = productDetailState.productCategoryName,
+                    label = "Category",
+                    floatingLabel = true,
+                    options = productDetailState.filteredCategories,
+                    optionText = { it },
+                    onSearchQueryChange = { typedString ->
+                        onAction(ProductFormAction.ProductDetailAction.OnCategoryChanged(typedString))
+                    },
+                    onOptionSelected = { selectedCategory ->
+                        onAction(ProductFormAction.ProductDetailAction.OnCategoryChanged(selectedCategory))
+                    },
+                    unfocusedColor = Theme.custom.hint,
+                    enableAddNew = true,
+                    onAddNewOption = {
+                        onAction(ProductFormAction.ProductDetailAction.OnCreateNewCategory(productDetailState.productCategoryName))
+                    },
+                    addNewText = stringResource(R.string.dropdown_new_category, productDetailState.productCategoryName),
+                    isError = formErrors?.categoryError != null,
+                    errorMessage = if (formErrors?.categoryError != null) {
+                        when (formErrors.categoryError) {
+                            ProductCategoryError.EMPTY -> null
+                            ProductCategoryError.TOO_LONG -> stringResource(R.string.error_product_category_too_long)
+                            ProductCategoryError.CONTAINS_NEWLINE -> stringResource(R.string.error_product_category_contains_newline)
+                        }
+                    } else null,
                     modifier = Modifier.fillMaxWidth()
-                ) {
-                    AppDropdownField(
-                        value = productDetailState.productCategoryName,
-                        label = "Category (Optional)",
-                        options = productDetailState.filteredCategories,
-                        optionText = { it },
-                        onSearchQueryChange = { typedString ->
-                            onAction(ProductFormAction.ProductDetailAction.OnCategoryChanged(typedString))
-                        },
-                        onOptionSelected = { selectedCategory ->
-                            onAction(ProductFormAction.ProductDetailAction.OnCategoryChanged(selectedCategory))
-                        },
-                        unfocusedColor = Theme.custom.hint,
-                        enableAddNew = true,
-                        onAddNewOption = {
-                            onAction(ProductFormAction.ProductDetailAction.OnCreateNewCategory(productDetailState.productCategoryName))
-                        },
-                        addNewText = stringResource(R.string.dropdown_new_category, productDetailState.productCategoryName),
-                        isError = formErrors?.categoryError != null,
-                        errorMessage = if (formErrors?.categoryError != null) {
-                            when(formErrors.categoryError) {
-                                ProductCategoryError.EMPTY -> null
-                                ProductCategoryError.TOO_LONG -> stringResource(R.string.error_product_category_too_long)
-                                ProductCategoryError.CONTAINS_NEWLINE -> stringResource(R.string.error_product_category_contains_newline)
-                            }
-                        } else null,
-                        modifier = Modifier.weight(0.6f)
-                    )
+                )
 
-                    AppTextField(
-                        value = productDetailState.standaloneQuantity,
-                        onValueChange = { qty ->
-                            val onlyDigit = qty.filter { it.isDigit() }
-                            onAction(ProductFormAction.ProductDetailAction.OnStandaloneQuantityChanged(onlyDigit))
-                        },
-                        label = "Initial Stock",
-                        minLines = 1,
-                        maxLines = 1,
-                        unfocusedColor = Theme.custom.hint,
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next,
-                        modifier = Modifier.weight(0.4f)
-                    )
-                }
-
+                // 6. DESCRIPTION
                 AppTextField(
                     value = productDetailState.productDescription ?: "",
                     onValueChange = { text ->
                         onAction(ProductFormAction.ProductDetailAction.OnDescriptionChanged(text))
                     },
-                    label = stringResource(R.string.label_field_product_description),
+                    label = "Description (Optional)",
+                    placeholder = "Optional",
                     minLines = 2,
                     maxLines = 3,
                     unfocusedColor = Theme.custom.hint,
-                    imeAction = ImeAction.Done,
+                    imeAction = ImeAction.Next,
                     capitalization = KeyboardCapitalization.Sentences,
                     modifier = Modifier
                         .nestedScroll(rememberNestedScrollInteropConnection()),
@@ -196,7 +228,50 @@ fun SectionProductInformation(
                         when (formErrors.descriptionError) {
                             ProductDescriptionError.TOO_LONG -> stringResource(R.string.error_product_description_too_long)
                         }
+                    } else null
+                )
+
+                // 7. BARCODE (Integrated into product form, without SKU)
+                AppTextField(
+                    value = barcode ?: "",
+                    onValueChange = { newBarcode ->
+                        val sanitized = newBarcode.replace(" ", "")
+                        onAction(
+                            ProductFormAction.ProductIdentificationAction.OnBarcodeChanged(
+                                InventoryBarcode(
+                                    value = sanitized,
+                                    format = "CODE_128"
+                                )
+                            )
+                        )
+                    },
+                    label = "Barcode",
+                    placeholder = "Scan or enter barcode",
+                    minLines = 1,
+                    maxLines = 1,
+                    unfocusedColor = Theme.custom.hint,
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Ascii,
+                    isError = formErrors?.barcodeError != null,
+                    errorMessage = if (formErrors?.barcodeError != null) {
+                        when (formErrors.barcodeError) {
+                            ProductBarcodeError.TOO_LONG -> stringResource(R.string.error_product_barcode_too_long)
+                            ProductBarcodeError.INVALID_CHARACTER -> stringResource(R.string.error_product_barcode_invalid_characters)
+                            ProductBarcodeError.CONTAINS_WHITESPACE -> stringResource(R.string.error_product_barcode_contains_spaces)
+                            ProductBarcodeError.ALREADY_EXISTS -> stringResource(R.string.error_product_barcode_already_exists)
+                        }
                     } else null,
+                    trailingIcon = {
+                        IconButton(
+                            onClick = onBarcodeIconClicked,
+                            modifier = Modifier.padding(end = 8.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(coreR.drawable.app_barcode_scanner),
+                                contentDescription = "Barcode Scanner"
+                            )
+                        }
+                    }
                 )
             }
         }

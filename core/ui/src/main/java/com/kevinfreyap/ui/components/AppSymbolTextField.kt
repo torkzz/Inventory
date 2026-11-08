@@ -136,7 +136,7 @@ fun CurrencyTextFieldPreview() {
         AppSymbolTextField(
             value = "",
             placeholder = "Unit Cost (Optional)",
-            symbol = "Rp",
+            symbol = "₱",
             onValueChange = {},
         )
     }

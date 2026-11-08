@@ -259,7 +259,7 @@ fun SectionDashboardSummaryPreview() {
         SectionDashboardSummary(
             totalItem = "1.700.000",
             totalProduct = "1.000.000",
-            estimatedValue = "Rp 1.200.000.000"
+            estimatedValue = "₱1,200,000.00"
         )
     }
 }

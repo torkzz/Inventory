@@ -401,7 +401,7 @@ fun DashboardScreenPreview() {
                     userRole = "Admin",
                     totalProductCount = "1.000",
                     totalItemsCount = "1.700",
-                    estimatedValue = "Rp 1.200.000.000",
+                    estimatedValue = "₱1,200,000.00",
                     recentProduct = AlertListUi(
                         title = R.string.label_recently_updated,
                         textButton = R.string.btn_label_view_all_product,

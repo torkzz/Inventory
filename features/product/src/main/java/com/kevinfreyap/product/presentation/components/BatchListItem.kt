@@ -241,7 +241,7 @@ fun BatchListItemPreview() {
             name = "Batch 1",
             location = "Garage Very Long Long Long Long One",
             quantity = 2,
-            cost = "Rp 5.000.000.000",
+            cost = "₱5,000,000.00",
             onBatchClick = {}
         )
     }

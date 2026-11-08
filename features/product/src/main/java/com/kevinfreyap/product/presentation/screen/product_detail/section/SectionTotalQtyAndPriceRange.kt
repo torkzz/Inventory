@@ -1,5 +1,6 @@
 package com.kevinfreyap.product.presentation.screen.product_detail.section
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kevinfreyap.product.R
+import com.kevinfreyap.ui.theme.CyberBorder
 import com.kevinfreyap.ui.theme.InventoryTheme
 import com.kevinfreyap.ui.theme.Theme
 import com.kevinfreyap.ui.util.shimmerEffect
@@ -58,7 +60,8 @@ fun SectionTotalQtyAndPriceRange (
                 .height(IntrinsicSize.Min)
         ) {
             Card(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(10.dp),
+                border = BorderStroke(1.dp, CyberBorder),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
@@ -113,7 +116,8 @@ fun SectionTotalQtyAndPriceRange (
             }
 
             Card(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(10.dp),
+                border = BorderStroke(1.dp, CyberBorder),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),

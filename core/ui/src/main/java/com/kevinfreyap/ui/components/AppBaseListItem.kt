@@ -55,6 +55,7 @@ fun AppBaseListItem(
     iconBackground: Color = Theme.custom.shimmer,
     imageUri: String? = null,
     icon: @Composable (() -> Unit)? = null,
+    titleContent: @Composable (() -> Unit)? = null,
     subtitle: @Composable (() -> Unit)? = null,
     trailingData: @Composable (() -> Unit)? = null
 ) {
@@ -127,16 +128,20 @@ fun AppBaseListItem(
                     .weight(1f)
                     .fillMaxHeight()
             ) {
-                Text(
-                    text = itemName,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
-                    color = Theme.custom.primaryText,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
+                if (titleContent != null) {
+                    titleContent()
+                } else {
+                    Text(
+                        text = itemName,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
+                        color = Theme.custom.primaryText,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                }
                 subtitle?.invoke()
             }
 
